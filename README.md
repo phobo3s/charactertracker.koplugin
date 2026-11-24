@@ -25,6 +25,9 @@ Never forget who's who in a long novel — or across an entire series — again.
 ### In-text recognition
 - **Underline character names** in the page (toggle in the menu).
   Names and aliases are indexed in the background using KOReader's `findAllText`.
+- **Underline style**: thick (KOReader's underline), thin light gray, or thin
+  under only the first mention of each character on the page. The other
+  mentions are not underlined but can still be tapped.
 - **Tap any underlined name** to open that character's detail view instantly.
 - Re-indexes automatically when characters or aliases are added/edited.
 
