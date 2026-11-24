@@ -40,9 +40,11 @@ Never forget who's who in a long novel — or across an entire series — again.
 - The whole selection is used as the name, cleaned up: surrounding
   punctuation and a possessive or case suffix after an apostrophe are dropped
   ("Wenjie’nin" → "Wenjie", "Holmes's" → "Holmes"; "O'Brien" is kept).
-- Name matching in the text is a substring search, so an alias can be a stem:
-  "Vasenk" also matches "Vasenka", "Vasenku" and inflected forms. Avoid very
-  short stems, which match inside other words.
+- **Match whole words only** (on by default): a name is underlined only as a
+  whole word, so "Tom" does not match "Tomorrow" and "Wang" does not match
+  "Wangfujing". A suffix after an apostrophe still matches ("Berk’in",
+  "Holmes's"). Turn it off to match inside words too, e.g. to use a stem like
+  "Vasenk" for "Vasenka", "Vasenku"; otherwise add each form as an alias.
 
 ### Series support (shared characters across books)
 - **Link a book to a series** to share one character database across multiple books.
@@ -78,7 +80,7 @@ Then restart KOReader.
 2. Tap **Character**.
 3. Choose **New character** and confirm the name (with an optional first
    note), or **Add as alias of…**, pick the character and confirm the alias
-   (you can shorten it to a stem first).
+   (editable before saving).
 
 **From the Tools menu:**
 1. **Tools → Character Tracker → Add character**

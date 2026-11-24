@@ -330,8 +330,23 @@ function CharacterTracker:_paintToPaging(bb, x, y)
     end
 end
 
+--- A search hit is a whole word when nothing is glued before it, and nothing
+-- after it except a suffix separated by an apostrophe: "Berk", "Berk," and
+-- "Berk’in" match "Berk", "Berkay" and "Özberk" do not. crengine reports the
+-- rest of the word around the hit as matched_word_prefix / _suffix.
+local function isWholeWordHit(item)
+    local prefix = item.matched_word_prefix
+    if prefix and prefix ~= "" then return false end
+    local suffix = item.matched_word_suffix
+    if suffix and suffix ~= "" then
+        return suffix:sub(1, 1) == "'" or suffix:sub(1, 3) == "\226\128\153" -- ' or ’
+    end
+    return true
+end
+
 function CharacterTracker:rebuildMarks()
     if not self.ui.document then return end
+    local whole_words = G_reader_settings:nilOrTrue("character_tracker_whole_words")
     self.char_marks = {}
     local names = {}
     for _i, char in ipairs(self.characters) do
@@ -347,14 +362,18 @@ function CharacterTracker:rebuildMarks()
     local info = InfoMessage:new{ text = _("Indexing character names…") }
     UIManager:show(info)
     UIManager:forceRePaint()
+    local time = require("ui/time")
+    local started = time.now()
     local completed, results = Trapper:dismissableRunInSubprocess(function()
         local all_marks = {}
         for _i, name in ipairs(names) do
             local res = self.ui.document:findAllText(name.text, true, 0, 5000, false)
             if res then
                 for _j, item in ipairs(res) do
-                    item.char_name = name.char_name
-                    table.insert(all_marks, item)
+                    if not whole_words or isWholeWordHit(item) then
+                        item.char_name = name.char_name
+                        table.insert(all_marks, item)
+                    end
                 end
             end
         end
@@ -364,6 +383,8 @@ function CharacterTracker:rebuildMarks()
     if completed and results then
         self.char_marks = results
     end
+    logger.info("CharacterTracker: indexed", #names, "names,", results and #results or 0, "hits in",
+        time.to_ms(time.since(started)), "ms, completed:", completed)
     UIManager:setDirty(self.dialog, "ui")
 end
 
@@ -2331,6 +2352,17 @@ function CharacterTracker:addToMainMenu(menu_items)
                     else
                         self:showLinkSeriesDialog()
                     end
+                end,
+            },
+            {
+                text = _("Match whole words only"),
+                help_text = _("Underline a name only as a whole word: \"Tom\" matches \"Tom\" and \"Tom's\", not \"Tomorrow\". A suffix after an apostrophe is allowed (\"Berk’in\"). Turn off to also match inside words, e.g. to use a stem as alias."),
+                checked_func = function()
+                    return G_reader_settings:nilOrTrue("character_tracker_whole_words")
+                end,
+                callback = function()
+                    G_reader_settings:flipNilOrTrue("character_tracker_whole_words")
+                    self:rebuildMarks()
                 end,
             },
             {
