@@ -344,6 +344,54 @@ local function isWholeWordHit(item)
     return true
 end
 
+-- ============================================================
+-- NAME INDEX CACHE
+-- Searching every name in the whole book is slow (about 0.4 s per name on an
+-- e-reader), and was done on every book open and every edit. The hits are
+-- stored per name in the sidecar ("characters_index.lua"); they are document
+-- positions (xpointers, or page + boxes in paging mode), so they stay valid
+-- across font and layout changes. Only names missing from the cache are
+-- searched. The cache is dropped when the document, the matching mode or the
+-- cache format changes.
+-- ============================================================
+
+local INDEX_VERSION = 1
+
+function CharacterTracker:getIndexFilePath()
+    local doc_file = self.doc_file or (self.ui.document and self.ui.document.file)
+    if not doc_file then return nil end
+    return self.ui.doc_settings:getSidecarDir(doc_file) .. "/characters_index.lua"
+end
+
+function CharacterTracker:getIndexKey(whole_words)
+    local md5 = self.ui.doc_settings:readSetting("partial_md5_checksum")
+        or (self.doc_file and util.partialMD5(self.doc_file)) or ""
+    return table.concat({ INDEX_VERSION, md5, whole_words and "whole" or "substring",
+        self.ui.rolling and "rolling" or "paging" }, "|")
+end
+
+--- Cached hits by lowercased name, or {} when missing or stale.
+function CharacterTracker:loadIndex(key)
+    local path = self:getIndexFilePath()
+    if not path or lfs.attributes(path, "mode") ~= "file" then return {} end
+    local LuaSettings = require("luasettings")
+    local ok, index = pcall(LuaSettings.open, LuaSettings, path)
+    if not ok or index:readSetting("key") ~= key then return {} end
+    return index:readSetting("names") or {}
+end
+
+function CharacterTracker:saveIndex(key, names)
+    local path = self:getIndexFilePath()
+    if not path then return end
+    local dir = path:match("^(.*)/[^/]+$")
+    if dir then util.makePath(dir) end
+    local LuaSettings = require("luasettings")
+    local index = LuaSettings:open(path)
+    index:saveSetting("key", key)
+    index:saveSetting("names", names)
+    index:flush()
+end
+
 function CharacterTracker:rebuildMarks()
     if not self.ui.document then return end
     local whole_words = G_reader_settings:nilOrTrue("character_tracker_whole_words")
@@ -358,32 +406,71 @@ function CharacterTracker:rebuildMarks()
         end
     end
     if #names == 0 then return end
-    local Trapper = require("ui/trapper")
-    local info = InfoMessage:new{ text = _("Indexing character names…") }
-    UIManager:show(info)
-    UIManager:forceRePaint()
+
     local time = require("ui/time")
     local started = time.now()
-    local completed, results = Trapper:dismissableRunInSubprocess(function()
-        local all_marks = {}
-        for _i, name in ipairs(names) do
-            local res = self.ui.document:findAllText(name.text, true, 0, 5000, false)
-            if res then
-                for _j, item in ipairs(res) do
+    local key = self:getIndexKey(whole_words)
+    local cached = self:loadIndex(key)
+    local missing, seen = {}, {}
+    for _i, name in ipairs(names) do
+        local lower = name.text:lower()
+        if cached[lower] == nil and not seen[lower] then
+            seen[lower] = true
+            table.insert(missing, name.text)
+        end
+    end
+
+    local found, completed = {}, true
+    if #missing > 0 then
+        local Trapper = require("ui/trapper")
+        local info = InfoMessage:new{ text = _("Indexing character names…") }
+        UIManager:show(info)
+        UIManager:forceRePaint()
+        local results
+        completed, results = Trapper:dismissableRunInSubprocess(function()
+            local by_name = {}
+            for _i, text in ipairs(missing) do
+                local hits = {}
+                local res = self.ui.document:findAllText(text, true, 0, 5000, false)
+                for _j, item in ipairs(res or {}) do
                     if not whole_words or isWholeWordHit(item) then
-                        item.char_name = name.char_name
-                        table.insert(all_marks, item)
+                        -- Only what painting needs, to keep the cache small.
+                        table.insert(hits, { start = item.start, ["end"] = item["end"], boxes = item.boxes })
                     end
                 end
+                by_name[text:lower()] = hits
+            end
+            return by_name
+        end, info)
+        UIManager:close(info)
+        found = completed and results or {}
+    end
+
+    -- Index for the current names: fresh hits, else cached ones. Names that
+    -- are no longer used are dropped.
+    local index, nb_hits = {}, 0
+    for _i, name in ipairs(names) do
+        local lower = name.text:lower()
+        local hits = found[lower] or cached[lower]
+        if hits then
+            index[lower] = hits
+            for _j, hit in ipairs(hits) do
+                table.insert(self.char_marks, {
+                    start = hit.start, ["end"] = hit["end"], boxes = hit.boxes,
+                    char_name = name.char_name,
+                })
+                nb_hits = nb_hits + 1
             end
         end
-        return all_marks
-    end, info)
-    UIManager:close(info)
-    if completed and results then
-        self.char_marks = results
     end
-    logger.info("CharacterTracker: indexed", #names, "names,", results and #results or 0, "hits in",
+    local changed = #missing > 0
+    for lower in pairs(cached) do
+        if index[lower] == nil then changed = true break end -- name no longer used
+    end
+    if completed and changed then
+        self:saveIndex(key, index)
+    end
+    logger.info("CharacterTracker: index:", #names, "names,", #missing, "searched,", nb_hits, "hits in",
         time.to_ms(time.since(started)), "ms, completed:", completed)
     UIManager:setDirty(self.dialog, "ui")
 end
