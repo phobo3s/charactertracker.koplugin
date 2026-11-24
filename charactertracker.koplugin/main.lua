@@ -10,9 +10,11 @@
     - Adds a menu entry under Tools for managing characters.
 ]]
 
+local Blitbuffer = require("ffi/blitbuffer")
 local ButtonDialog = require("ui/widget/buttondialog")
 local CenterContainer = require("ui/widget/container/centercontainer")
 local Screen = require("device").screen
+local Size = require("ui/size")
 local ConfirmBox = require("ui/widget/confirmbox")
 local DataStorage = require("datastorage")
 local Device = require("device")
@@ -254,6 +256,65 @@ end
 -- NAME UNDERLINE (VIEW MODULE)
 -- ============================================================
 
+--- Underline styles: "thick" is KOReader's own underscore highlight,
+-- "thin" a light hairline, "first" a light hairline under only the first
+-- mention of each character on the page (the others stay tappable).
+local UNDERLINE_STYLES = { "thick", "thin", "first" }
+
+function CharacterTracker:getUnderlineStyle()
+    local style = G_reader_settings:readSetting("character_tracker_underline_style")
+    for _i, s in ipairs(UNDERLINE_STYLES) do
+        if s == style then return style end
+    end
+    return "thick"
+end
+
+function CharacterTracker:setUnderlineStyle(style)
+    G_reader_settings:saveSetting("character_tracker_underline_style", style)
+    UIManager:setDirty(self.dialog, "ui")
+end
+
+--- Draw the underlines for the boxes collected in self.visible_boxes.
+function CharacterTracker:drawUnderlines(bb, x, y)
+    local style = self:getUnderlineStyle()
+    local boxes = self.visible_boxes
+    if style == "first" then
+        -- Keep, per character, the mark that comes first on screen
+        -- (top to bottom, then left to right), with all of its boxes.
+        local first = {}
+        for _i, vbox in ipairs(boxes) do
+            local r = vbox.rect
+            local best = first[vbox.char_name]
+            -- (y < 0: the end of a mark that starts on the previous page)
+            if r.y >= 0 and (not best or r.y < best.y or (r.y == best.y and r.x < best.x)) then
+                first[vbox.char_name] = { mark = vbox.mark, y = r.y, x = r.x }
+            end
+        end
+        local keep = {}
+        for _name, best in pairs(first) do
+            keep[best.mark] = true
+        end
+        local filtered = {}
+        for _i, vbox in ipairs(boxes) do
+            if keep[vbox.mark] then
+                table.insert(filtered, vbox)
+            end
+        end
+        boxes = filtered
+    end
+    if style == "thick" then
+        for _i, vbox in ipairs(boxes) do
+            self.view:drawHighlightRect(bb, x, y, vbox.rect, "underscore")
+        end
+    else
+        local thickness = math.max(1, Size.line.thin)
+        for _i, vbox in ipairs(boxes) do
+            local r = vbox.rect
+            bb:paintRect(r.x, r.y + r.h - thickness, r.w, thickness, Blitbuffer.COLOR_GRAY_9)
+        end
+    end
+end
+
 function CharacterTracker:paintTo(bb, x, y)
     self.visible_boxes = {}
     if not self.char_marks or #self.char_marks == 0 then
@@ -264,6 +325,9 @@ function CharacterTracker:paintTo(bb, x, y)
             self:_paintToRolling(bb, x, y)
         elseif self.ui.paging then
             self:_paintToPaging(bb, x, y)
+        end
+        if self.mark_enabled then
+            self:drawUnderlines(bb, x, y)
         end
     end)
     if not ok then
@@ -291,12 +355,10 @@ function CharacterTracker:_paintToRolling(bb, x, y)
                     if boxes then
                         for _j, box in ipairs(boxes) do
                             if box.h ~= 0 then
-                                if self.mark_enabled then
-                                    self.view:drawHighlightRect(bb, x, y, box, "underscore")
-                                end
                                 table.insert(self.visible_boxes, {
                                     rect = box,
                                     char_name = mark.char_name,
+                                    mark = mark,
                                 })
                             end
                         end
@@ -316,12 +378,10 @@ function CharacterTracker:_paintToPaging(bb, x, y)
                 if native_box then
                     local screen_rect = self.view:pageToScreenTransform(cur_page, native_box)
                     if screen_rect then
-                        if self.mark_enabled then
-                            self.view:drawHighlightRect(bb, x, y, screen_rect, "underscore")
-                        end
                         table.insert(self.visible_boxes, {
                             rect = screen_rect,
                             char_name = mark.char_name,
+                            mark = mark,
                         })
                     end
                 end
@@ -2428,6 +2488,40 @@ function CharacterTracker:addToMainMenu(menu_items)
                     self.ui.doc_settings:saveSetting("character_tracker_underline", self.mark_enabled)
                     UIManager:setDirty(self.dialog, "ui")
                 end,
+            },
+            {
+                text_func = function()
+                    local labels = {
+                        thick = _("thick"),
+                        thin = _("thin"),
+                        first = _("first mention"),
+                    }
+                    return T(_("Underline style: %1"), labels[self:getUnderlineStyle()])
+                end,
+                enabled_func = function()
+                    return self.mark_enabled
+                end,
+                sub_item_table = {
+                    {
+                        text = _("Thick (KOReader underline)"),
+                        radio = true,
+                        checked_func = function() return self:getUnderlineStyle() == "thick" end,
+                        callback = function() self:setUnderlineStyle("thick") end,
+                    },
+                    {
+                        text = _("Thin, light gray"),
+                        radio = true,
+                        checked_func = function() return self:getUnderlineStyle() == "thin" end,
+                        callback = function() self:setUnderlineStyle("thin") end,
+                    },
+                    {
+                        text = _("Thin, first mention per page only"),
+                        help_text = _("Underline each character only where it is first mentioned on the page. The other mentions are not underlined but can still be tapped."),
+                        radio = true,
+                        checked_func = function() return self:getUnderlineStyle() == "first" end,
+                        callback = function() self:setUnderlineStyle("first") end,
+                    },
+                },
             },
             {
                 text = _("Link to series"),
