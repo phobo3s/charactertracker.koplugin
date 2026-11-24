@@ -239,6 +239,7 @@ function CharacterTracker:onReaderReady()
 end
 
 function CharacterTracker:onCloseDocument()
+    self:cancelResumeRechecks()
     self:saveData()
 end
 
@@ -738,10 +739,34 @@ function CharacterTracker:checkExportFileChanged(force)
     end
 end
 
-function CharacterTracker:onResume()
-    if self.data_loaded then
-        self:checkExportFileChanged(true)
+--- After waking up, a sync client usually needs some time (Wi-Fi reconnect,
+-- pull) before a new export file arrives, so check again a few times.
+local RESUME_RECHECK_DELAYS = { 30, 90, 180 } -- seconds after resume
+
+function CharacterTracker:cancelResumeRechecks()
+    for _i, fn in ipairs(self.resume_rechecks or {}) do
+        UIManager:unschedule(fn)
     end
+    self.resume_rechecks = {}
+end
+
+function CharacterTracker:onResume()
+    if not self.data_loaded then return end
+    self:checkExportFileChanged(true)
+    self:cancelResumeRechecks()
+    for _i, delay in ipairs(RESUME_RECHECK_DELAYS) do
+        local fn = function()
+            if self.data_loaded and self.ui.document then
+                self:checkExportFileChanged(true)
+            end
+        end
+        table.insert(self.resume_rechecks, fn)
+        UIManager:scheduleIn(delay, fn)
+    end
+end
+
+function CharacterTracker:onSuspend()
+    self:cancelResumeRechecks()
 end
 
 --- Load characters from a specific file path (helper for merging)
