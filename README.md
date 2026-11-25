@@ -196,12 +196,29 @@ The plugin sets `updated` by itself whenever a character changes on the device.
 
 ---
 
+## Translations
+
+The plugin follows KOReader's UI language. Available: **Turkish** (`tr`).
+
+Its strings are not part of KOReader's own translations, so they live in
+standard gettext PO files in `l10n/`. To add a language, copy `l10n/tr.po`
+to `l10n/<code>.po`, where `<code>` is KOReader's language code (`de`,
+`pt_BR`, ...), translate the `msgstr` lines and restart KOReader. No code
+change is needed. A regional code falls back to the base language
+(`pt_BR` → `pt.po`), and a string missing from the PO falls back to
+KOReader's own translation, then to English.
+
+---
+
 ## File structure
 
 ```
 charactertracker.koplugin/
 ├── _meta.lua    # Plugin metadata
-└── main.lua     # Plugin logic
+├── main.lua     # Plugin logic
+├── l10n.lua     # Loads the translations below
+└── l10n/
+    └── tr.po    # Turkish
 ```
 
 

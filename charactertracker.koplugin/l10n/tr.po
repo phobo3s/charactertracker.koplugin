@@ -1,0 +1,462 @@
+# Turkish translation of the Character Tracker KOReader plugin.
+# Names are inserted as '%1' and never take a suffix, so sentences are
+# built to stay correct for any name (no vowel harmony after placeholders).
+msgid ""
+msgstr ""
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# _meta.lua
+msgid "Character Tracker"
+msgstr "Karakter Takibi"
+
+msgid "Track characters, add notes, and link highlights to characters while reading. Never forget who's who in a book again."
+msgstr "Okurken karakterleri takip edin, not ekleyin, vurgularınızı karakterlere bağlayın. Kimin kim olduğunu bir daha unutmayın."
+
+# Relationship types
+msgid "Father"
+msgstr "Baba"
+
+msgid "Mother"
+msgstr "Anne"
+
+msgid "Son"
+msgstr "Oğul"
+
+msgid "Daughter"
+msgstr "Kız"
+
+msgid "Brother"
+msgstr "Erkek kardeş"
+
+msgid "Sister"
+msgstr "Kız kardeş"
+
+msgid "Spouse"
+msgstr "Eş"
+
+msgid "Ally"
+msgstr "Müttefik"
+
+msgid "Enemy"
+msgstr "Düşman"
+
+msgid "Friend"
+msgstr "Arkadaş"
+
+msgid "Mentor"
+msgstr "Akıl hocası"
+
+msgid "Servant"
+msgstr "Hizmetkâr"
+
+msgid "Master"
+msgstr "Efendi"
+
+msgid "Lover"
+msgstr "Sevgili"
+
+msgid "Custom…"
+msgstr "Özel…"
+
+msgid "Unknown"
+msgstr "Bilinmiyor"
+
+# Roles
+msgid "Not set"
+msgstr "Belirtilmemiş"
+
+msgid "Main"
+msgstr "Ana karakter"
+
+msgid "Secondary"
+msgstr "Yan karakter"
+
+msgid "Tertiary"
+msgstr "Küçük rol"
+
+msgid "Mentioned"
+msgstr "Adı geçen"
+
+msgid "Antagonist"
+msgstr "Antagonist"
+
+msgid "Narrator"
+msgstr "Anlatıcı"
+
+msgid "No rating"
+msgstr "Puan yok"
+
+# Highlight / dictionary button, dispatcher actions
+msgid "Character"
+msgstr "Karakter"
+
+msgid "Character: %1"
+msgstr "Karakter: %1"
+
+msgid "Character Tracker: show characters"
+msgstr "Karakter Takibi: karakterleri göster"
+
+msgid "Character Tracker: export characters"
+msgstr "Karakter Takibi: karakterleri dışa aktar"
+
+msgid "Indexing character names…"
+msgstr "Karakter adları dizinleniyor…"
+
+# Export / import
+msgid "Set an export / import folder first."
+msgstr "Önce bir dışa / içe aktarma klasörü seçin."
+
+msgid "Characters exported"
+msgstr "Karakterler dışa aktarıldı"
+
+msgid "Characters updated from the export file"
+msgstr "Karakterler dışa aktarma dosyasından güncellendi"
+
+msgid "Unknown chapter"
+msgstr "Bilinmeyen bölüm"
+
+# Adding characters
+msgid "Character '%1' already exists."
+msgstr "Bu karakter zaten var: '%1'."
+
+msgid "Character '%1' added."
+msgstr "Karakter eklendi: '%1'."
+
+msgid "Add new character"
+msgstr "Yeni karakter ekle"
+
+msgid "Character name"
+msgstr "Karakter adı"
+
+msgid "Note (optional) - e.g. role, description"
+msgstr "Not (isteğe bağlı) - örn. rolü, tarifi"
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Add"
+msgstr "Ekle"
+
+msgid "Name cannot be empty."
+msgstr "Ad boş olamaz."
+
+# Notes
+msgid "+ Add note"
+msgstr "+ Not ekle"
+
+msgid "Close"
+msgstr "Kapat"
+
+msgid "Notes - %1"
+msgstr "Notlar - %1"
+
+msgid "Add note to '%1'"
+msgstr "Not ekle: '%1'"
+
+msgid "Write your note here..."
+msgstr "Notunuzu buraya yazın..."
+
+msgid "Save"
+msgstr "Kaydet"
+
+msgid "Note added."
+msgstr "Not eklendi."
+
+msgid "Edit note"
+msgstr "Notu düzenle"
+
+msgid "Note updated."
+msgstr "Not güncellendi."
+
+msgid "Delete note?\n\n\"%1\""
+msgstr "Not silinsin mi?\n\n\"%1\""
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Note deleted."
+msgstr "Not silindi."
+
+# Aliases
+msgid "+ Add alias"
+msgstr "+ Takma ad ekle"
+
+msgid "Aliases - %1"
+msgstr "Takma adlar - %1"
+
+msgid "Add alias for '%1'"
+msgstr "Takma ad ekle: '%1'"
+
+msgid "Alias (nickname, title, etc.)"
+msgstr "Takma ad (lakap, unvan vb.)"
+
+msgid "'%1' is already used by '%2'."
+msgstr "'%1' zaten kullanılıyor: '%2'."
+
+msgid "Alias '%1' already exists."
+msgstr "Bu takma ad zaten var: '%1'."
+
+msgid "Alias '%1' added."
+msgstr "Takma ad eklendi: '%1'."
+
+msgid "Edit alias"
+msgstr "Takma adı düzenle"
+
+msgid "Alias updated to '%1'."
+msgstr "Takma ad güncellendi: '%1'."
+
+msgid "Delete alias '%1'?"
+msgstr "Takma ad silinsin mi: '%1'?"
+
+msgid "Alias '%1' deleted."
+msgstr "Takma ad silindi: '%1'."
+
+msgid "Character '%1' not found."
+msgstr "Karakter bulunamadı: '%1'."
+
+# Relationships
+msgid "+ Add relationship"
+msgstr "+ İlişki ekle"
+
+msgid "Relationships - %1"
+msgstr "İlişkiler - %1"
+
+msgid "No other characters to link. Add more characters first."
+msgstr "Bağlanacak başka karakter yok. Önce karakter ekleyin."
+
+msgid "Add relationship from '%1' to…"
+msgstr "İlişki ekle: '%1' →"
+
+msgid "'%1' is ___ of '%2'"
+msgstr "'%1', '%2' karakterinin ___"
+
+msgid "Custom relationship: '%1' → '%2'"
+msgstr "Özel ilişki: '%1' → '%2'"
+
+msgid "Relationship (e.g. squire, rival, betrothed)"
+msgstr "İlişki (örn. silahtar, rakip, nişanlı)"
+
+msgid "Relationship already exists."
+msgstr "Bu ilişki zaten var."
+
+msgid "Added: '%1' — %2 → '%3'"
+msgstr "Eklendi: '%1' — %2 → '%3'"
+
+msgid "Delete relationship?\n\n%1 → %2 (%3)"
+msgstr "İlişki silinsin mi?\n\n%1 → %2 (%3)"
+
+msgid "Relationship deleted."
+msgstr "İlişki silindi."
+
+# Character detail
+msgid "Delete character '%1' and all associated data?"
+msgstr "Karakter ve tüm verileri silinsin mi: '%1'?"
+
+msgid "Character '%1' deleted."
+msgstr "Karakter silindi: '%1'."
+
+msgid "Rename '%1'"
+msgstr "Yeniden adlandır: '%1'"
+
+msgid "Rename"
+msgstr "Yeniden adlandır"
+
+msgid "Renamed '%1' → '%2'."
+msgstr "Yeniden adlandırıldı: '%1' → '%2'."
+
+msgid "Clear rating"
+msgstr "Puanı temizle"
+
+msgid "Rate '%1'"
+msgstr "Puanla: '%1'"
+
+msgid "Role of '%1'"
+msgstr "Rol: '%1'"
+
+msgid "Rating"
+msgstr "Puan"
+
+msgid "Role"
+msgstr "Rol"
+
+msgid "Aliases"
+msgstr "Takma adlar"
+
+msgid "Relationships"
+msgstr "İlişkiler"
+
+msgid "Notes"
+msgstr "Notlar"
+
+msgid "No notes yet."
+msgstr "Henüz not yok."
+
+msgid "Rate"
+msgstr "Puanla"
+
+msgid "Relations"
+msgstr "İlişkiler"
+
+# Character list
+msgid "No characters tracked yet.\n\nTo add a character:\n1. Select text in the book\n2. Tap 'Character' in the highlight menu\n3. Or use the Tools menu → Character Tracker → Add character"
+msgstr "Henüz takip edilen karakter yok.\n\nKarakter eklemek için:\n1. Kitapta metni seçin\n2. Vurgu menüsünde 'Karakter'e dokunun\n3. Ya da Araçlar menüsü → Karakter Takibi → Karakter ekle"
+
+msgid "%1 aliases"
+msgstr "%1 takma ad"
+
+msgid "%1 relations"
+msgstr "%1 ilişki"
+
+msgid "%1 notes"
+msgstr "%1 not"
+
+msgid "Characters"
+msgstr "Karakterler"
+
+# Selection / dictionary
+msgid "No text selected."
+msgstr "Metin seçilmedi."
+
+msgid "'%1' is not a known character."
+msgstr "Bilinen bir karakter değil: '%1'."
+
+msgid "New character"
+msgstr "Yeni karakter"
+
+msgid "Add as alias of…"
+msgstr "Takma ad olarak ekle…"
+
+msgid "'%1' is an alias of:"
+msgstr "'%1' şu karakterin takma adı olsun:"
+
+msgid "X"
+msgstr "X"
+
+# Series
+msgid "＋ New series"
+msgstr "＋ Yeni seri"
+
+msgid "Link book to series"
+msgstr "Kitabı seriye bağla"
+
+msgid "New series"
+msgstr "Yeni seri"
+
+msgid "Series name (e.g. A Song of Ice and Fire)"
+msgstr "Seri adı (örn. Buz ve Ateşin Şarkısı)"
+
+msgid "Create & link"
+msgstr "Oluştur ve bağla"
+
+msgid "Series name cannot be empty."
+msgstr "Seri adı boş olamaz."
+
+msgid "Linked to series '%1'.\nMerged characters: %2 new added, %3 already in series."
+msgstr "Seriye bağlandı: '%1'.\nBirleştirilen karakterler: %2 yeni eklendi, %3 zaten seride vardı."
+
+msgid "Linked to series '%1'.\n%2 characters moved to shared series."
+msgstr "Seriye bağlandı: '%1'.\n%2 karakter ortak seriye taşındı."
+
+msgid "Linked to series '%1'.\nLoaded %2 shared characters."
+msgstr "Seriye bağlandı: '%1'.\n%2 ortak karakter yüklendi."
+
+msgid "Linked to series '%1'.\nNo characters yet — they will be shared across all books in this series."
+msgstr "Seriye bağlandı: '%1'.\nHenüz karakter yok — eklenenler serideki tüm kitaplarda ortak olacak."
+
+msgid "Unlink this book from series '%1'?\n\nThe shared series characters will remain in the series. This book will start with an empty character list."
+msgstr "Bu kitabın seri bağlantısı kaldırılsın mı: '%1'?\n\nOrtak karakterler seride kalır. Bu kitap boş bir karakter listesiyle başlar."
+
+msgid "Unlink"
+msgstr "Bağlantıyı kaldır"
+
+msgid "Unlinked from series '%1'."
+msgstr "Seri bağlantısı kaldırıldı: '%1'."
+
+# Menu
+msgid "Character list"
+msgstr "Karakter listesi"
+
+msgid "Add character"
+msgstr "Karakter ekle"
+
+msgid "Underline names in text"
+msgstr "Metinde adların altını çiz"
+
+msgid "thick"
+msgstr "kalın"
+
+msgid "thin"
+msgstr "ince"
+
+msgid "first mention"
+msgstr "ilk geçiş"
+
+msgid "Underline style: %1"
+msgstr "Çizgi stili: %1"
+
+msgid "Thick (KOReader underline)"
+msgstr "Kalın (KOReader alt çizgisi)"
+
+msgid "Thin, light gray"
+msgstr "İnce, açık gri"
+
+msgid "Thin, first mention per page only"
+msgstr "İnce, sayfada yalnızca ilk geçiş"
+
+msgid "Underline each character only where it is first mentioned on the page. The other mentions are not underlined but can still be tapped."
+msgstr "Her karakterin yalnızca sayfada ilk geçtiği yerin altı çizilir. Diğer geçişler çizilmez ama dokununca yine açılır."
+
+msgid "Link to series"
+msgstr "Seriye bağla"
+
+msgid "Match whole words only"
+msgstr "Yalnızca tam kelime eşleşsin"
+
+msgid "Underline a name only as a whole word: \"Tom\" matches \"Tom\" and \"Tom's\", not \"Tomorrow\". A suffix after an apostrophe is allowed (\"Berk’in\"). Turn off to also match inside words, e.g. to use a stem as alias."
+msgstr "Ad yalnızca tam kelime olarak eşleşir: \"Berk\", \"Berk\" ve \"Berk’in\" ile eşleşir, \"Berkay\" ile eşleşmez. Kesme işaretinden sonraki ek serbesttir. Kapatırsanız kelime içinde de eşleşir; örneğin bir kökü takma ad olarak kullanmak için."
+
+msgid "Export / import"
+msgstr "Dışa / içe aktarma"
+
+msgid "Export characters now"
+msgstr "Karakterleri şimdi dışa aktar"
+
+msgid "Export characters on book closing"
+msgstr "Kitap kapanırken karakterleri dışa aktar"
+
+msgid "Also writes the export file on every automatic save, like KOReader's annotation export."
+msgstr "KOReader'ın not dışa aktarması gibi, her otomatik kayıtta da dosyayı yazar."
+
+msgid "Keep all characters on import"
+msgstr "İçe aktarırken tüm karakterleri koru"
+
+msgid "When enabled, characters missing from the imported file are kept on this device. When disabled, they are removed if the file is newer than their last change."
+msgstr "Açıkken, içe aktarılan dosyada olmayan karakterler bu cihazda korunur. Kapalıyken, dosya karakterin son değişikliğinden yeniyse karakter silinir."
+
+msgid "Export / import folder: %1"
+msgstr "Dışa / içe aktarma klasörü: %1"
+
+msgid "not set"
+msgstr "seçilmedi"
+
+msgid "Current characters export folder:"
+msgstr "Şu anki karakter dışa aktarma klasörü:"
+
+msgid "Delete series '%1'?\n\nThis will permanently remove the shared character file (%2 characters). Books currently linked to this series will lose access to its characters."
+msgstr "Seri silinsin mi: '%1'?\n\nOrtak karakter dosyası (%2 karakter) kalıcı olarak silinir. Bu seriye bağlı kitaplar bu karakterlere erişemez."
+
+msgid "Deleted series '%1'."
+msgstr "Seri silindi: '%1'."
+
+msgid "Change series name"
+msgstr "Seri adını değiştir"
+
+msgid "Unlink from series"
+msgstr "Seri bağlantısını kaldır"
+
+msgid "Series: %1\n%2 shared characters"
+msgstr "Seri: %1\n%2 ortak karakter"

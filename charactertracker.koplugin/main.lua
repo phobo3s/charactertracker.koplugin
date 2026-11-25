@@ -32,7 +32,12 @@ local util = require("util")
 local json = require("json")
 local rapidjson = require("rapidjson")
 local filemanagerutil = require("apps/filemanager/filemanagerutil")
-local _ = require("gettext")
+-- Plugin translations (l10n/<lang>.po), falling back to KOReader's catalogue
+local _ = (function()
+    local dir = debug.getinfo(1, "S").source:match("^@(.*[/\\])") or "./"
+    local ok, gettext = pcall(dofile, dir .. "l10n.lua")
+    return ok and gettext or require("gettext")
+end)()
 local T = require("ffi/util").template
 
 local CharacterTracker = WidgetContainer:extend{
