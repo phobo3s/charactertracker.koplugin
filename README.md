@@ -3,6 +3,24 @@
 Track characters, relationships, and notes while you read.
 Never forget who's who in a long novel — or across an entire series — again.
 
+> **This is a fork** of [Shac0x/charactertracker.koplugin](https://github.com/Shac0x/charactertracker.koplugin),
+> the original plugin by Shac0x. The changes below are also open as pull
+> requests there.
+
+### What this fork adds
+
+- **Sidecar storage**: characters live in the book's `.sdr` folder and move
+  with the book.
+- **Export / import**: a JSON copy for a synced folder or notes vault (git,
+  Syncthing…), merged back with edits made on a PC.
+- **Character button in the dictionary popup** and **Add as alias of…**:
+  link nicknames to a known character in two taps.
+- **Whole-word matching**: "Tom" no longer underlines "Tomorrow".
+- **Cached name index**: books open without re-indexing; only new names are
+  searched.
+- **Lighter underline**: thin gray, or only the first mention on each page.
+- **Translations**: follows KOReader's UI language; Turkish included.
+
 ---
 
 ## Features
@@ -61,13 +79,19 @@ Never forget who's who in a long novel — or across an entire series — again.
 
 ## Installation
 
-Copy the `charactertracker.koplugin` folder to your KOReader plugins directory:
+1. Download `charactertracker.koplugin.zip` from the
+   [latest release](https://github.com/phobo3s/charactertracker.koplugin/releases/latest).
+2. Unzip it into your KOReader plugins directory, so that you get:
 
-```
-<koreader>/plugins/charactertracker.koplugin/
-```
+   ```
+   <koreader>/plugins/charactertracker.koplugin/
+   ```
 
-Then restart KOReader.
+   If you had the original plugin installed, replace that folder.
+3. Restart KOReader.
+
+Characters saved by the original plugin are read as they are and moved to the
+book's sidecar folder on the next save.
 
 ---
 
