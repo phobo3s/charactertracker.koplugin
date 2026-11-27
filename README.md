@@ -19,7 +19,15 @@ Never forget who's who in a long novel — or across an entire series — again.
 - **Cached name index**: books open without re-indexing; only new names are
   searched.
 - **Lighter underline**: thin gray, or only the first mention on each page.
+- **Overlapping names**: the longer name wins ("Yang Dong" over "Yang"); a tap
+  on a shared name asks which character is meant.
 - **Translations**: follows KOReader's UI language; Turkish included.
+
+| Thin underline, first mention per page | Character card |
+|---|---|
+| ![Thin underline under the first mention of each character](docs/screenshots/underline-first-mention.png) | ![Character card with rating, aliases, relationships and notes](docs/screenshots/character-card.png) |
+
+<sub>Screenshots: *Pride and Prejudice* (public domain, Standard Ebooks edition) on an Onyx e-reader.</sub>
 
 ---
 
