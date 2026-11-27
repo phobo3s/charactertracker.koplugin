@@ -39,6 +39,10 @@ local _ = (function()
     return ok and gettext or require("gettext")
 end)()
 local T = require("ffi/util").template
+local FamilyTree = (function()
+    local dir = debug.getinfo(1, "S").source:match("^@(.*[/\\])") or "./"
+    return dofile(dir .. "familytree.lua")(_)
+end)()
 
 local CharacterTracker = WidgetContainer:extend{
     name = "charactertracker",
@@ -2103,6 +2107,13 @@ function CharacterTracker:showCharacterDetail(character)
                         self:showRelationshipManager(character)
                     end,
                 },
+                {
+                    text = _("Family tree"),
+                    callback = function()
+                        UIManager:close(viewer)
+                        self:showFamilyTree(character)
+                    end,
+                },
             },
             {
                 {
@@ -2132,6 +2143,28 @@ function CharacterTracker:showCharacterDetail(character)
         },
     }
     UIManager:show(viewer)
+end
+
+--- Family tree of all characters; with a character, its family comes first
+--- and its box is highlighted. Tapping a name opens that character's card.
+function CharacterTracker:showFamilyTree(character)
+    if not FamilyTree.hasFamily(self.characters or {}) then
+        UIManager:show(InfoMessage:new{
+            text = _("No family relationships yet.\n\nAdd father, mother, son, daughter, brother, sister or spouse relations from a character's Relations."),
+        })
+        return
+    end
+    local tree
+    tree = FamilyTree:new{
+        characters = self.characters,
+        focus = character,
+        on_tap = function(char)
+            -- The card's "Family tree" button comes back, centered on char.
+            UIManager:close(tree)
+            self:showCharacterDetail(char)
+        end,
+    }
+    UIManager:show(tree)
 end
 
 -- ============================================================
@@ -2530,6 +2563,13 @@ function CharacterTracker:addToMainMenu(menu_items)
                 keep_menu_open = false,
                 callback = function()
                     self:showAddCharacterDialog()
+                end,
+            },
+            {
+                text = _("Family tree"),
+                keep_menu_open = false,
+                callback = function()
+                    self:showFamilyTree()
                 end,
             },
             {

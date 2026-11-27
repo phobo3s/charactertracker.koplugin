@@ -469,3 +469,12 @@ msgstr "nam-ı diğer: %1"
 
 msgid "Which character?"
 msgstr "Hangi karakter?"
+
+msgid "Family tree"
+msgstr "Soy ağacı"
+
+msgid "Tap a name to open it · swipe to move"
+msgstr "Açmak için isme dokun · kaydırmak için sürükle"
+
+msgid "No family relationships yet.\n\nAdd father, mother, son, daughter, brother, sister or spouse relations from a character's Relations."
+msgstr "Henüz aile ilişkisi yok.\n\nBir karakterin İlişkiler bölümünden baba, anne, oğul, kız, erkek kardeş, kız kardeş ya da eş ilişkisi ekle."

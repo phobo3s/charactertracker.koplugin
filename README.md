@@ -21,11 +21,13 @@ Never forget who's who in a long novel — or across an entire series — again.
 - **Lighter underline**: thin gray, or only the first mention on each page.
 - **Overlapping names**: the longer name wins ("Yang Dong" over "Yang"); a tap
   on a shared name asks which character is meant.
+- **Family tree**: parents, children, siblings and spouses drawn as a tree;
+  tap a name to open its card.
 - **Translations**: follows KOReader's UI language; Turkish included.
 
-| Thin underline, first mention per page | Character card |
-|---|---|
-| ![Thin underline under the first mention of each character](docs/screenshots/underline-first-mention.png) | ![Character card with rating, aliases, relationships and notes](docs/screenshots/character-card.png) |
+| Thin underline, first mention per page | Character card | Family tree |
+|---|---|---|
+| ![Thin underline under the first mention of each character](docs/screenshots/underline-first-mention.png) | ![Character card with rating, aliases, relationships and notes](docs/screenshots/character-card.png) | ![Family tree of the Bennets with spouses and siblings](docs/screenshots/family-tree.png) |
 
 <sub>Screenshots: *Pride and Prejudice* (public domain, Standard Ebooks edition) on an Onyx e-reader.</sub>
 
@@ -47,6 +49,19 @@ Never forget who's who in a long novel — or across an entire series — again.
 - Detail view shows both **outgoing** (→) and **incoming** (←) relationships.
 - Tap a relationship to jump to that character's detail view.
 - Deleting a character cleans up dangling relationships automatically.
+
+### Family tree
+- **Tools → Character Tracker → Family tree**, or **Family tree** on a
+  character's card (that character is shown in bold).
+- Built from the family relationships: father, mother, son, daughter,
+  brother, sister, spouse. Parents are drawn above their children, spouses
+  side by side with a double line. Siblings whose parents are not known are
+  joined by a dashed line under their boxes.
+- One relation is enough: "Jane is Elizabeth's sister" and "Mr. Bennet is
+  Elizabeth's father" also put Jane under Mr. Bennet.
+- Separate families are drawn one under the other. Swipe to move around a
+  large tree; tap a name to open that character's card.
+- A relationship to a name that is not a character is drawn in gray.
 
 ### In-text recognition
 - **Underline character names** in the page (toggle in the menu).
@@ -248,6 +263,7 @@ KOReader's own translation, then to English.
 charactertracker.koplugin/
 ├── _meta.lua    # Plugin metadata
 ├── main.lua     # Plugin logic
+├── familytree.lua  # Family tree view
 ├── l10n.lua     # Loads the translations below
 └── l10n/
     └── tr.po    # Turkish
