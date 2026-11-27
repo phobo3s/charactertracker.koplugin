@@ -478,3 +478,6 @@ msgstr "Açmak için isme dokun · kaydırmak için sürükle"
 
 msgid "No family relationships yet.\n\nAdd father, mother, son, daughter, brother, sister or spouse relations from a character's Relations."
 msgstr "Henüz aile ilişkisi yok.\n\nBir karakterin İlişkiler bölümünden baba, anne, oğul, kız, erkek kardeş, kız kardeş ya da eş ilişkisi ekle."
+
+msgid "The character export file cannot be read, so it was not overwritten. Fix it (e.g. on your PC) and sync again:\n\n%1"
+msgstr "Karakter dışa aktarım dosyası okunamıyor, bu yüzden üzerine yazılmadı. Dosyayı (örneğin bilgisayarda) düzeltip yeniden eşitle:\n\n%1"

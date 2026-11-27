@@ -800,18 +800,64 @@ function CharacterTracker:stampChangedCharacters()
     end
 end
 
---- Read and decode the export file; nil when missing or unreadable.
+--- JSON does not allow a raw line break or tab inside a string, but an
+-- editor on a PC easily puts one in a note. Escape such characters inside
+-- strings so the file can still be read. The editor's indentation after
+-- such a line break is dropped.
+local function escapeControlCharsInStrings(s)
+    local out, in_str, esc, after_break = {}, false, false, false
+    for i = 1, #s do
+        local b = s:byte(i)
+        local c = string.char(b)
+        if in_str and after_break and (c == " " or c == "\t" or c == "\r") then
+            c = ""
+        elseif in_str then
+            after_break = false
+            if esc then
+                esc = false
+            elseif c == "\\" then
+                esc = true
+            elseif c == '"' then
+                in_str = false
+            elseif b < 0x20 then
+                if c == "\n" then c = "\\n"; after_break = true
+                elseif c == "\t" then c = "\\t"
+                elseif c == "\r" then c = ""
+                else c = string.format("\\u%04x", b) end
+            end
+        elseif c == '"' then
+            in_str = true
+        end
+        out[#out + 1] = c
+    end
+    return table.concat(out)
+end
+
+local function decodeExport(content)
+    local ok, data = pcall(rapidjson.decode, content)
+    if ok and type(data) == "table" and type(data.characters) == "table" then
+        return data
+    end
+    ok, data = pcall(rapidjson.decode, escapeControlCharsInStrings(content))
+    if ok and type(data) == "table" and type(data.characters) == "table" then
+        return data
+    end
+end
+
+--- Read and decode the export file. Returns nil when it is missing, and
+-- nil, true when it exists but cannot be read (it must then not be
+-- overwritten: it may hold edits made on a PC).
 function CharacterTracker:readExportFile()
     local path = self:getExportFilePath()
     if not path or lfs.attributes(path, "mode") ~= "file" then return nil end
     local f = io.open(path, "r")
-    if not f then return nil end
+    if not f then return nil, true end
     local content = f:read("*all")
     f:close()
-    local ok, data = pcall(rapidjson.decode, content)
-    if not ok or type(data) ~= "table" or type(data.characters) ~= "table" then
+    local data = decodeExport(content or "")
+    if not data then
         logger.warn("CharacterTracker: cannot parse export file", path)
-        return nil
+        return nil, true
     end
     return data
 end
@@ -819,6 +865,18 @@ end
 function CharacterTracker:rememberExportMtime()
     local path = self:getExportFilePath()
     self.export_mtime = path and lfs.attributes(path, "modification") or nil
+end
+
+--- Tell once per version of the file that it cannot be read (always when
+-- asked by the user).
+function CharacterTracker:warnBrokenExport(always)
+    local path = self:getExportFilePath()
+    local mtime = path and lfs.attributes(path, "modification")
+    if not always and self.broken_export_warned == mtime then return end
+    self.broken_export_warned = mtime
+    UIManager:show(InfoMessage:new{
+        text = T(_("The character export file cannot be read, so it was not overwritten. Fix it (e.g. on your PC) and sync again:\n\n%1"), path),
+    })
 end
 
 --- Write the export file. Unless forced, it is left untouched when it already
@@ -836,7 +894,13 @@ function CharacterTracker:exportCharacters(show_notification, force, already_mer
         end
         return false
     end
-    local existing = self:readExportFile()
+    local existing, broken = self:readExportFile()
+    if broken then
+        -- Never overwrite a file we cannot read: it may hold edits made
+        -- elsewhere. It is written again once it is fixed.
+        self:warnBrokenExport(show_notification)
+        return false
+    end
     local device_id = G_reader_settings:readSetting("device_id")
     if existing and existing.device_id ~= device_id then
         if not already_merged and self:importCharacters() then
@@ -879,7 +943,8 @@ end
 --- Merge characters from the export file if another device wrote it.
 -- Returns true when the local list changed.
 function CharacterTracker:importCharacters()
-    local data = self:readExportFile()
+    local data, broken = self:readExportFile()
+    if broken then self:warnBrokenExport() end
     if not data then return false end
     if data.device_id == G_reader_settings:readSetting("device_id") then
         return false -- written by this device

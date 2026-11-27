@@ -245,6 +245,11 @@ annotation export files:
 
 The plugin sets `updated` by itself whenever a character changes on the device.
 
+A line break typed inside a note (which plain JSON does not allow) is read as
+a new line. A file that still cannot be read is never overwritten: the device
+shows a warning with the file's path and keeps its own copy until the file is
+fixed.
+
 ---
 
 ## Translations
