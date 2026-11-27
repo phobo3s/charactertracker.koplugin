@@ -420,7 +420,13 @@ end
 -- cache format changes.
 -- ============================================================
 
-local INDEX_VERSION = 1
+local INDEX_VERSION = 2 -- 2: searched with KOReader's default search flags
+
+-- The same matching as KOReader's own full-text search (its default search
+-- type, 0x00FF): match across text nodes, fold spaces, apostrophes and
+-- hyphens. Without it "Mr. Darcy" never matched in books that typeset
+-- "<abbr>Mr.</abbr>&nbsp;Darcy". Ignored by PDF documents.
+local SEARCH_FLAGS = 0x00FF
 
 function CharacterTracker:getIndexFilePath()
     local doc_file = self.doc_file or (self.ui.document and self.ui.document.file)
@@ -518,7 +524,7 @@ function CharacterTracker:rebuildMarks()
             local by_name = {}
             for _i, text in ipairs(missing) do
                 local hits = {}
-                local res = self.ui.document:findAllText(text, true, 0, 5000, false)
+                local res = self.ui.document:findAllText(text, true, 0, 5000, false, SEARCH_FLAGS)
                 for _j, item in ipairs(res or {}) do
                     if not whole_words or isWholeWordHit(item) then
                         -- Only what painting needs, to keep the cache small.
