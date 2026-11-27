@@ -25,9 +25,13 @@ Never forget who's who in a long novel — or across an entire series — again.
   tap a name to open its card.
 - **Translations**: follows KOReader's UI language; Turkish included.
 
-| Thin underline, first mention per page | Character card | Family tree |
-|---|---|---|
-| ![Thin underline under the first mention of each character](docs/screenshots/underline-first-mention.png) | ![Character card with rating, aliases, relationships and notes](docs/screenshots/character-card.png) | ![Family tree of the Bennets with spouses and siblings](docs/screenshots/family-tree.png) |
+| Thin underline, first mention per page | Character card |
+|---|---|
+| ![Thin underline under the first mention of each character](docs/screenshots/underline-first-mention.png) | ![Character card with rating, aliases, relationships and notes](docs/screenshots/character-card.png) |
+
+**Family tree** (new in 1.2.0):
+
+![Family tree of the Bennets with spouses and siblings](docs/screenshots/family-tree.png)
 
 <sub>Screenshots: *Pride and Prejudice* (public domain, Standard Ebooks edition) on an Onyx e-reader.</sub>
 
