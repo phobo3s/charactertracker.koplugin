@@ -457,6 +457,28 @@ function CharacterTracker:saveIndex(key, names)
     index:flush()
 end
 
+-- A short name inside a longer one ("Yang" in "Yang Dong", "Dong" in "Yang
+-- Dong") would mark the same words twice. Hits that start or end where a
+-- longer hit does belong to the longer name, so they are dropped. Equally
+-- long hits stay; a tap on them asks which character is meant.
+-- Only text documents have xpointer strings to compare; PDF hits are kept.
+local function dropShorterOverlaps(marks)
+    local longest_start, longest_end = {}, {}
+    for _i, m in ipairs(marks) do
+        if type(m.start) == "string" and type(m["end"]) == "string" then
+            if (longest_start[m.start] or 0) < m.len then longest_start[m.start] = m.len end
+            if (longest_end[m["end"]] or 0) < m.len then longest_end[m["end"]] = m.len end
+        end
+    end
+    local kept = {}
+    for _i, m in ipairs(marks) do
+        local beaten = type(m.start) == "string" and type(m["end"]) == "string"
+            and ((longest_start[m.start] or 0) > m.len or (longest_end[m["end"]] or 0) > m.len)
+        if not beaten then table.insert(kept, m) end
+    end
+    return kept
+end
+
 function CharacterTracker:rebuildMarks()
     if not self.ui.document then return end
     local whole_words = G_reader_settings:nilOrTrue("character_tracker_whole_words")
@@ -522,12 +544,13 @@ function CharacterTracker:rebuildMarks()
             for _j, hit in ipairs(hits) do
                 table.insert(self.char_marks, {
                     start = hit.start, ["end"] = hit["end"], boxes = hit.boxes,
-                    char_name = name.char_name,
+                    char_name = name.char_name, len = #name.text,
                 })
                 nb_hits = nb_hits + 1
             end
         end
     end
+    self.char_marks = dropShorterOverlaps(self.char_marks)
     local changed = #missing > 0
     for lower in pairs(cached) do
         if index[lower] == nil then changed = true break end -- name no longer used
@@ -535,7 +558,8 @@ function CharacterTracker:rebuildMarks()
     if completed and changed then
         self:saveIndex(key, index)
     end
-    logger.info("CharacterTracker: index:", #names, "names,", #missing, "searched,", nb_hits, "hits in",
+    logger.info("CharacterTracker: index:", #names, "names,", #missing, "searched,", nb_hits, "hits,",
+        nb_hits - #self.char_marks, "inside longer names, in",
         time.to_ms(time.since(started)), "ms, completed:", completed)
     UIManager:setDirty(self.dialog, "ui")
 end
@@ -547,18 +571,37 @@ function CharacterTracker:onTapUnderline(ges)
     local ok, result = pcall(function()
         local pos = self.view:screenToPageTransform(ges.pos)
         if not pos then return false end
+        -- Several characters can share a name or alias ("Yang"): collect all.
+        local chars, seen = {}, {}
         for _i, vbox in ipairs(self.visible_boxes) do
             local r = vbox.rect
             if pos.x >= r.x and pos.y >= r.y
-               and pos.x <= r.x + r.w and pos.y <= r.y + r.h then
+               and pos.x <= r.x + r.w and pos.y <= r.y + r.h
+               and not seen[vbox.char_name] then
+                seen[vbox.char_name] = true
                 local char = self:getCharacterByName(vbox.char_name)
-                if char then
-                    self:showCharacterDetail(char)
-                    return true
-                end
+                if char then table.insert(chars, char) end
             end
         end
-        return false
+        if #chars == 0 then return false end
+        if #chars == 1 then
+            self:showCharacterDetail(chars[1])
+            return true
+        end
+        local chooser
+        local buttons = {}
+        for _i, char in ipairs(chars) do
+            table.insert(buttons, {{
+                text = char.name,
+                callback = function()
+                    UIManager:close(chooser)
+                    self:showCharacterDetail(char)
+                end,
+            }})
+        end
+        chooser = ButtonDialog:new{ title = _("Which character?"), buttons = buttons }
+        UIManager:show(chooser)
+        return true
     end)
     if not ok then
         logger.warn("CharacterTracker: tap error:", result)
@@ -1987,7 +2030,7 @@ function CharacterTracker:showCharacterDetail(character)
         end
         for _i, rel in ipairs(incoming) do
             local label = getRelationshipLabel(rel.type)
-            table.insert(text_parts, "  ← " .. rel.source .. " (" .. label .. ")\n")
+            table.insert(text_parts, "  ← " .. T(_("%1 of %2"), label, rel.source) .. "\n")
         end
     end
 
@@ -2136,7 +2179,7 @@ function CharacterTracker:showCharacterList()
         -- Show aliases below the name
         local display_name = char.name
         if char.aliases and #char.aliases > 0 then
-            display_name = char.name .. "\n    aka: " .. table.concat(char.aliases, ", ")
+            display_name = char.name .. "\n    " .. T(_("aka: %1"), table.concat(char.aliases, ", "))
         end
 
         table.insert(item_table, {
@@ -2250,7 +2293,7 @@ function CharacterTracker:showCharacterPicker(title, on_pick)
     for _i, char in ipairs(sorted) do
         local text = char.name
         if char.aliases and #char.aliases > 0 then
-            text = text .. "\n    aka: " .. table.concat(char.aliases, ", ")
+            text = text .. "\n    " .. T(_("aka: %1"), table.concat(char.aliases, ", "))
         end
         table.insert(item_table, {
             text = text,

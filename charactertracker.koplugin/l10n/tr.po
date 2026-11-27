@@ -460,3 +460,12 @@ msgstr "Seri bağlantısını kaldır"
 
 msgid "Series: %1\n%2 shared characters"
 msgstr "Seri: %1\n%2 ortak karakter"
+
+msgid "%1 of %2"
+msgstr "%1 (%2 için)"
+
+msgid "aka: %1"
+msgstr "nam-ı diğer: %1"
+
+msgid "Which character?"
+msgstr "Hangi karakter?"
